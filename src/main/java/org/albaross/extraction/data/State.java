@@ -1,28 +1,25 @@
 package org.albaross.extraction.data;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
-public class State {
+public class State implements Iterable<String> {
 
 	private final String[] literals;
-
-	private final int hash;
 
 	public State(Set<String> input) {
 		Objects.requireNonNull(input, "literals must nor be null");
 		this.literals = input.toArray(new String[input.size()]);
 		Arrays.sort(literals);
-		this.hash = Arrays.hashCode(literals);
 	}
 
 	private State(String[] literals) {
 		this.literals = literals;
-		this.hash = Arrays.hashCode(literals);
 	}
 
-	public final boolean contains(State other) {
+	public boolean contains(State other) {
 		int j = 0;
 		for (int i = 0; i < literals.length; i++)
 			if (literals[i].equals(other.literals[j])) j++;
@@ -30,7 +27,12 @@ public class State {
 		return other.literals.length == j;
 	}
 
-	public final State combine(State other) {
+	@Override
+	public Iterator<String> iterator() {
+		return Arrays.asList(literals).iterator();
+	}
+
+	public State combineWith(State other) {
 		if (literals.length != other.literals.length) return null;
 		final int len = literals.length;
 
@@ -69,6 +71,6 @@ public class State {
 
 	@Override
 	public int hashCode() {
-		return hash;
+		return Arrays.hashCode(literals);
 	}
 }
